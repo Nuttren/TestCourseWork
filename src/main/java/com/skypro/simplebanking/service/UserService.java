@@ -9,6 +9,11 @@ import com.skypro.simplebanking.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,6 +47,11 @@ public class UserService implements UserDetailsService {
 
   @Transactional
   public UserDTO createUser(String username, String password) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("admin"))) {
+      throw new AccessDeniedException("Access is denied");
+    }
     Optional<User> existingUser = userRepository.findByUsername(username);
     if (existingUser.isPresent()) {
       throw new UserAlreadyExistsException();
