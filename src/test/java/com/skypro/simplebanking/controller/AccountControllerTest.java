@@ -160,7 +160,7 @@ class AccountControllerTest {
 
         mockMvc.perform(post("/account/withdraw/{id}", account.getId())
                         .with(request -> {
-                            request.setRemoteUser("adminuser"); // Setting an admin user
+                            request.setRemoteUser("adminuser");
                             return request;
                         })
                         .contentType(MediaType.APPLICATION_JSON)
